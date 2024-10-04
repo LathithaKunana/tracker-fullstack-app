@@ -9,6 +9,7 @@ const MovementTracker = () => {
     const [isTracking, setIsTracking] = useState(false); // To control start/stop tracking
     const [error, setError] = useState(null);
     const [isAnimating, setIsAnimating] = useState(false); // To manage animation state
+    const [animationTimeout, setAnimationTimeout] = useState(null); // To manage the animation timeout
   
     // Helper function to determine movement based on acceleration data
     const detectMovement = (acceleration) => {
@@ -24,17 +25,21 @@ const MovementTracker = () => {
       else if (totalAcceleration > 15 && totalAcceleration <= 25 && !isAnimating) {
         setMovementType('Dancing');
         startAnimation();
-      } else {
+      } else if (!isAnimating) {
         setMovementType('None');
       }
     };
   
     const startAnimation = () => {
       setIsAnimating(true);
-      setTimeout(() => {
+      // Clear any existing timeout to prevent multiple calls
+      if (animationTimeout) clearTimeout(animationTimeout);
+      // Set the timeout for 10 seconds
+      const timeout = setTimeout(() => {
         setIsAnimating(false);
         setMovementType('None'); // Reset movement type after animation
-      }, 10000); // Show the animation for 10 seconds
+      }, 10000);
+      setAnimationTimeout(timeout); // Store the timeout ID
     };
   
     useEffect(() => {
@@ -69,8 +74,10 @@ const MovementTracker = () => {
   
       return () => {
         stopTracking();
+        // Cleanup the timeout if the component unmounts
+        if (animationTimeout) clearTimeout(animationTimeout);
       };
-    }, [isTracking]);
+    }, [isTracking, animationTimeout]);
   
     const toggleTracking = () => {
       setIsTracking(!isTracking);
@@ -103,10 +110,10 @@ const MovementTracker = () => {
               {/* Render Lottie animations based on movement */}
               <div className="mt-6 flex justify-center">
                 {isAnimating && movementType === 'Jumping' && (
-                  <Lottie animationData={jumpingAnimation} className="w-32 h-32" />
+                  <Lottie animationData={jumpingAnimation} loop={true} className="w-32 h-32" />
                 )}
                 {isAnimating && movementType === 'Dancing' && (
-                  <Lottie animationData={dancingAnimation} className="w-32 h-32" />
+                  <Lottie animationData={dancingAnimation} loop={true} className="w-32 h-32" />
                 )}
                 {!isAnimating && movementType === 'None' && (
                   <p className="text-gray-500">No significant movement detected.</p>
