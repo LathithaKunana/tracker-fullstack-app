@@ -3,7 +3,7 @@ import StepTracker from './components/StepTracker';
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h- bg-gray-50 flex items-center justify-center">
       <StepTracker />
     </div>
   );
