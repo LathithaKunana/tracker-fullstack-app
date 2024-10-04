@@ -8,7 +8,7 @@ const StepTracker = () => {
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
   let lastAcceleration = { x: 0, y: 0, z: 0 };
-  let stepThreshold = 1.2; // Lower threshold to increase sensitivity
+  let stepThreshold = 2.2; // Lower threshold to increase sensitivity
 
   useEffect(() => {
     const handleMotionEvent = (event) => {
