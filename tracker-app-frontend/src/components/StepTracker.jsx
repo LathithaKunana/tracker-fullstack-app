@@ -1,23 +1,31 @@
 import React, { useState, useEffect } from 'react';
 
 const StepTracker = () => {
-  const [stepCount, setStepCount] = useState(0);  // Start step count at 0 on page load
+  const [stepCount, setStepCount] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
   let lastAcceleration = { x: 0, y: 0, z: 0 };
-  let stepThreshold = 2.0; // Adjust sensitivity for step detection
+  let lastStepTime = 0;
+  let stepThreshold = 2.0; // Higher sensitivity for step detection
+  const stepCooldown = 500; // Minimum time between steps (500ms)
 
   useEffect(() => {
     const handleMotionEvent = (event) => {
       const acceleration = event.accelerationIncludingGravity;
+      const currentTime = new Date().getTime();
+
       if (acceleration) {
         const deltaX = Math.abs(acceleration.x - lastAcceleration.x);
         const deltaY = Math.abs(acceleration.y - lastAcceleration.y);
         const deltaZ = Math.abs(acceleration.z - lastAcceleration.z);
 
-        // Detect a step when motion exceeds the threshold
-        if (deltaX + deltaY + deltaZ > stepThreshold) {
-          setStepCount((prevCount) => prevCount + 1);  // Increment step count
+        // Step detection threshold based on combined motion data
+        const totalMovement = deltaX + deltaY + deltaZ;
+
+        // Only register a step if enough time has passed since the last one
+        if (totalMovement > stepThreshold && currentTime - lastStepTime > stepCooldown) {
+          setStepCount((prevCount) => prevCount + 1);
+          lastStepTime = currentTime;  // Update the time of the last step
         }
 
         lastAcceleration = {
@@ -34,7 +42,7 @@ const StepTracker = () => {
         return;
       }
       if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
-        // For iOS devices, request permission to use motion detection
+        // For iOS devices, request permission
         DeviceMotionEvent.requestPermission()
           .then((response) => {
             if (response === 'granted') {
