@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const StepTracker = () => {
-  const [stepCount, setStepCount] = useState(() => {
-    const savedSteps = localStorage.getItem('stepCount');
-    return savedSteps ? parseInt(savedSteps) : 0;
-  });
+  const [stepCount, setStepCount] = useState(0);  // Start step count at 0 on page load
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
   let lastAcceleration = { x: 0, y: 0, z: 0 };
-  let stepThreshold = 2.2; // Lower threshold to increase sensitivity
+  let stepThreshold = 2.0; // Adjust sensitivity for step detection
 
   useEffect(() => {
     const handleMotionEvent = (event) => {
@@ -18,12 +15,9 @@ const StepTracker = () => {
         const deltaY = Math.abs(acceleration.y - lastAcceleration.y);
         const deltaZ = Math.abs(acceleration.z - lastAcceleration.z);
 
+        // Detect a step when motion exceeds the threshold
         if (deltaX + deltaY + deltaZ > stepThreshold) {
-          setStepCount((prevCount) => {
-            const newCount = prevCount + 1;
-            localStorage.setItem('stepCount', newCount);
-            return newCount;
-          });
+          setStepCount((prevCount) => prevCount + 1);  // Increment step count
         }
 
         lastAcceleration = {
@@ -40,7 +34,7 @@ const StepTracker = () => {
         return;
       }
       if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
-        // For iOS devices, request permission
+        // For iOS devices, request permission to use motion detection
         DeviceMotionEvent.requestPermission()
           .then((response) => {
             if (response === 'granted') {
