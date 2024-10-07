@@ -69,7 +69,7 @@ const MovementTracker = () => {
       const timeout = setTimeout(() => {
         setIsAnimating(false);
         setMovementType('None');
-      }, 10000);
+      }, 3000);
       setAnimationTimeout(timeout);
     };
 
