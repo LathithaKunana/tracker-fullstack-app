@@ -5,9 +5,10 @@ const StepTracker = () => {
     return parseInt(localStorage.getItem('stepCount')) || 0;
   });
   const [error, setError] = useState(null);
+  const [isTracking, setIsTracking] = useState(false);
   let lastAcceleration = { x: 0, y: 0, z: 0 };
   let lastStepTime = 0;
-  let stepThreshold = 2.0; // Higher sensitivity for step detection
+  const stepThreshold = 2.0; // Higher sensitivity for step detection
   const stepCooldown = 500; // Minimum time between steps (500ms)
 
   useEffect(() => {
@@ -39,30 +40,41 @@ const StepTracker = () => {
       }
     };
 
-    const checkDeviceMotionSupport = () => {
+    const checkDeviceMotionSupport = async () => {
       if (typeof DeviceMotionEvent === 'undefined') {
         setError('DeviceMotion not supported on this device or browser.');
         return;
       }
+      
+      // Request motion permission if necessary
       if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceMotionEvent.requestPermission()
-          .then((response) => {
-            if (response === 'granted') {
-              window.addEventListener('devicemotion', handleMotionEvent);
-            }
-          })
-          .catch((err) => setError('Permission denied: ' + err.message));
+        try {
+          const response = await DeviceMotionEvent.requestPermission();
+          if (response === 'granted') {
+            setIsTracking(true);
+          } else {
+            setError('Motion permission denied.');
+          }
+        } catch (err) {
+          setError('Error requesting motion permission: ' + err.message);
+        }
       } else {
-        window.addEventListener('devicemotion', handleMotionEvent);
+        setIsTracking(true);
       }
     };
+
+    if (isTracking) {
+      window.addEventListener('devicemotion', handleMotionEvent);
+    } else {
+      window.removeEventListener('devicemotion', handleMotionEvent);
+    }
 
     checkDeviceMotionSupport();
 
     return () => {
       window.removeEventListener('devicemotion', handleMotionEvent);
     };
-  }, []);
+  }, [isTracking]);
 
   const resetTracking = () => {
     setStepCount(0);
