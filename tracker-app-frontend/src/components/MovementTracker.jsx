@@ -10,6 +10,7 @@ const MovementTracker = () => {
     const [error, setError] = useState(null);
     const [isAnimating, setIsAnimating] = useState(false); // To manage animation state
     const [animationTimeout, setAnimationTimeout] = useState(null); // To manage the animation timeout
+    const [movementCount, setMovementCount] = useState(0); // To track the number of movements
   
     // Helper function to determine movement based on acceleration data
     const detectMovement = (acceleration) => {
@@ -19,11 +20,13 @@ const MovementTracker = () => {
       // Detect jump (based on a high acceleration threshold)
       if (totalAcceleration > 25 && !isAnimating) {
         setMovementType('Jumping');
+        setMovementCount(prevCount => prevCount + 1); // Increment movement count
         startAnimation();
       }
       // Detect dancing (moderate movement for dancing-like behavior)
       else if (totalAcceleration > 15 && totalAcceleration <= 25 && !isAnimating) {
         setMovementType('Dancing');
+        setMovementCount(prevCount => prevCount + 1); // Increment movement count
         startAnimation();
       } else if (!isAnimating) {
         setMovementType('None');
@@ -84,7 +87,6 @@ const MovementTracker = () => {
     };
   
     return (
-      
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
             Movement Tracker
@@ -95,6 +97,9 @@ const MovementTracker = () => {
             <>
               <p className="text-center text-lg font-medium text-gray-700 mb-4">
                 Current Movement: <span className="text-indigo-600">{movementType}</span>
+              </p>
+              <p className="text-center text-lg font-medium text-gray-700 mb-4">
+                Movement Count: <span className="text-indigo-600">{movementCount}</span>
               </p>
               <button
                 onClick={toggleTracking}
@@ -122,7 +127,6 @@ const MovementTracker = () => {
             </>
           )}
         </div>
-     
     );
   };
   
