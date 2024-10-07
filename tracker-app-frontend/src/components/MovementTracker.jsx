@@ -9,7 +9,9 @@ const MovementTracker = () => {
   const [error, setError] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationTimeout, setAnimationTimeout] = useState(null);
-  const [movementCount, setMovementCount] = useState(0);
+  const [movementCount, setMovementCount] = useState(() => {
+    return parseInt(localStorage.getItem('movementCount')) || 0;
+  });
 
   useEffect(() => {
     let isTracking = true;
@@ -42,11 +44,19 @@ const MovementTracker = () => {
 
       if (totalAcceleration > 25 && !isAnimating) {
         setMovementType('Jumping');
-        setMovementCount(prevCount => prevCount + 1);
+        setMovementCount(prevCount => {
+          const newCount = prevCount + 1;
+          localStorage.setItem('movementCount', newCount);
+          return newCount;
+        });
         startAnimation();
       } else if (totalAcceleration > 15 && totalAcceleration <= 25 && !isAnimating) {
         setMovementType('Dancing');
-        setMovementCount(prevCount => prevCount + 1);
+        setMovementCount(prevCount => {
+          const newCount = prevCount + 1;
+          localStorage.setItem('movementCount', newCount);
+          return newCount;
+        });
         startAnimation();
       } else if (!isAnimating) {
         setMovementType('None');
@@ -70,6 +80,11 @@ const MovementTracker = () => {
       if (animationTimeout) clearTimeout(animationTimeout);
     };
   }, [isAnimating, animationTimeout]);
+
+  const resetTracking = () => {
+    setMovementCount(0);
+    localStorage.setItem('movementCount', 0);
+  };
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -97,6 +112,12 @@ const MovementTracker = () => {
               <p className="text-gray-500">No significant movement detected.</p>
             )}
           </div>
+          <button
+            onClick={resetTracking}
+            className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+          >
+            Reset Tracking
+          </button>
         </>
       )}
     </div>
