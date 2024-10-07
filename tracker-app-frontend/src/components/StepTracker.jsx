@@ -40,41 +40,45 @@ const StepTracker = () => {
       }
     };
 
-    const checkDeviceMotionSupport = async () => {
-      if (typeof DeviceMotionEvent === 'undefined') {
-        setError('DeviceMotion not supported on this device or browser.');
-        return;
-      }
-      
-      // Request motion permission if necessary
-      if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
-        try {
-          const response = await DeviceMotionEvent.requestPermission();
-          if (response === 'granted') {
-            setIsTracking(true);
-          } else {
-            setError('Motion permission denied.');
-          }
-        } catch (err) {
-          setError('Error requesting motion permission: ' + err.message);
-        }
-      } else {
-        setIsTracking(true);
-      }
-    };
-
     if (isTracking) {
       window.addEventListener('devicemotion', handleMotionEvent);
     } else {
       window.removeEventListener('devicemotion', handleMotionEvent);
     }
 
-    checkDeviceMotionSupport();
-
     return () => {
       window.removeEventListener('devicemotion', handleMotionEvent);
     };
   }, [isTracking]);
+
+  const requestPermissions = async () => {
+    // Request microphone permission first
+    try {
+      const microphoneResponse = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (microphoneResponse) {
+        console.log("Microphone access granted");
+      }
+    } catch (err) {
+      setError('Microphone permission denied: ' + err.message);
+      return;
+    }
+
+    // Request motion permission
+    if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+      try {
+        const motionResponse = await DeviceMotionEvent.requestPermission();
+        if (motionResponse === 'granted') {
+          setIsTracking(true); // Start tracking if permission granted
+        } else {
+          setError('Motion permission denied.');
+        }
+      } catch (err) {
+        setError('Error requesting motion permission: ' + err.message);
+      }
+    } else {
+      setIsTracking(true); // Start tracking if no permission request is needed
+    }
+  };
 
   const resetTracking = () => {
     setStepCount(0);
@@ -93,6 +97,14 @@ const StepTracker = () => {
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
             Step Count: <span className="text-indigo-600">{stepCount}</span>
           </p>
+          {!isTracking && (
+            <button
+              onClick={requestPermissions}
+              className="mt-4 w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-lg font-semibold"
+            >
+              Allow Access to Sensors
+            </button>
+          )}
           <button
             onClick={resetTracking}
             className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
