@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 const NoiseLevelTracker = () => {
   const [noiseLevel, setNoiseLevel] = useState(0);
-  const [highestNoiseLevel, setHighestNoiseLevel] = useState(0);
+  const [highestNoiseLevel, setHighestNoiseLevel] = useState(() => {
+    return parseInt(localStorage.getItem('highestNoiseLevel')) || 0;
+  });
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -30,6 +32,7 @@ const NoiseLevelTracker = () => {
 
           if (avgVolume > highestNoiseLevel) {
             setHighestNoiseLevel(avgVolume);
+            localStorage.setItem('highestNoiseLevel', avgVolume);
           }
 
           requestAnimationFrame(updateNoiseLevel);
@@ -50,6 +53,11 @@ const NoiseLevelTracker = () => {
     };
   }, [highestNoiseLevel]);
 
+  const resetTracking = () => {
+    setHighestNoiseLevel(0);
+    localStorage.setItem('highestNoiseLevel', 0);
+  };
+
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
       <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
@@ -65,6 +73,12 @@ const NoiseLevelTracker = () => {
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
             Highest Noise Level: <span className="text-red-600">{Math.round(highestNoiseLevel)}</span>
           </p>
+          <button
+            onClick={resetTracking}
+            className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+          >
+            Reset Tracking
+          </button>
         </>
       )}
     </div>

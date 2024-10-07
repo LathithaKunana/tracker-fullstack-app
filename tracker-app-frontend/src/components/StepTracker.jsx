@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 const StepTracker = () => {
-  const [stepCount, setStepCount] = useState(0);
+  const [stepCount, setStepCount] = useState(() => {
+    return parseInt(localStorage.getItem('stepCount')) || 0;
+  });
   const [error, setError] = useState(null);
   let lastAcceleration = { x: 0, y: 0, z: 0 };
   let lastStepTime = 0;
@@ -9,7 +11,6 @@ const StepTracker = () => {
   const stepCooldown = 500; // Minimum time between steps (500ms)
 
   useEffect(() => {
-    let isTracking = true;
     const handleMotionEvent = (event) => {
       const acceleration = event.accelerationIncludingGravity;
       const currentTime = new Date().getTime();
@@ -22,7 +23,11 @@ const StepTracker = () => {
         const totalMovement = deltaX + deltaY + deltaZ;
 
         if (totalMovement > stepThreshold && currentTime - lastStepTime > stepCooldown) {
-          setStepCount((prevCount) => prevCount + 1);
+          setStepCount((prevCount) => {
+            const newCount = prevCount + 1;
+            localStorage.setItem('stepCount', newCount);
+            return newCount;
+          });
           lastStepTime = currentTime;
         }
 
@@ -59,6 +64,11 @@ const StepTracker = () => {
     };
   }, []);
 
+  const resetTracking = () => {
+    setStepCount(0);
+    localStorage.setItem('stepCount', 0);
+  };
+
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
       <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
@@ -71,6 +81,12 @@ const StepTracker = () => {
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
             Step Count: <span className="text-indigo-600">{stepCount}</span>
           </p>
+          <button
+            onClick={resetTracking}
+            className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+          >
+            Reset Tracking
+          </button>
         </>
       )}
     </div>
