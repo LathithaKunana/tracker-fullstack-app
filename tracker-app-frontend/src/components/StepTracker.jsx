@@ -76,7 +76,8 @@ const StepTracker = () => {
         setError('Error requesting motion permission: ' + err.message);
       }
     } else {
-      setIsTracking(true); // Start tracking if no permission request is needed
+      // Start tracking if no permission request is needed
+      setIsTracking(true);
     }
   };
 
