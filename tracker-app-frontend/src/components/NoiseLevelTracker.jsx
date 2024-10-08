@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const NoiseLevelTracker = () => {
   const [noiseLevel, setNoiseLevel] = useState(0);
+  const [isTracking, setIsTracking] = useState(false);
   const [highestNoiseLevel, setHighestNoiseLevel] = useState(() => {
     return parseInt(localStorage.getItem('highestNoiseLevel')) || 0;
   });
@@ -44,18 +45,28 @@ const NoiseLevelTracker = () => {
       }
     };
 
-    startTracking();
-
-    return () => {
+    const stopTracking = () => {
       if (audioContext) {
         audioContext.close();
       }
     };
-  }, [highestNoiseLevel]);
+    if (isTracking) {
+      startTracking();
+    } else {
+      stopTracking();
+    }
+    return () => {
+      stopTracking();
+    };
+  }, [isTracking, highestNoiseLevel]);
 
   const resetTracking = () => {
     setHighestNoiseLevel(0);
     localStorage.setItem('highestNoiseLevel', 0);
+  };
+
+  const toggleTracking = () => {
+    setIsTracking(!isTracking);
   };
 
   return (
@@ -73,6 +84,16 @@ const NoiseLevelTracker = () => {
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
             Highest Noise Level: <span className="text-red-600">{Math.round(highestNoiseLevel)}</span>
           </p>
+          <button
+              onClick={toggleTracking}
+              className={`mt-4 w-full py-2 px-4 text-white rounded-lg text-lg font-semibold transition-colors ${
+                isTracking
+                  ? 'bg-red-500 hover:bg-red-600'
+                  : 'bg-indigo-500 hover:bg-indigo-600'
+              }`}
+            >
+              {isTracking ? 'Stop Tracking' : 'Start Tracking'}
+            </button>
           <button
             onClick={resetTracking}
             className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
