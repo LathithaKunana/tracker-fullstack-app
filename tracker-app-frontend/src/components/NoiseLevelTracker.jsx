@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const NoiseLevelTracker = () => {
   const [noiseLevel, setNoiseLevel] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
   const [highestNoiseLevel, setHighestNoiseLevel] = useState(() => {
-    return parseInt(localStorage.getItem('highestNoiseLevel')) || 0;
+    return parseInt(localStorage.getItem("highestNoiseLevel")) || 0;
   });
   const [error, setError] = useState(null);
 
@@ -17,7 +17,9 @@ const NoiseLevelTracker = () => {
     const startTracking = async () => {
       try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         microphone = audioContext.createMediaStreamSource(stream);
         analyser = audioContext.createAnalyser();
         analyser.fftSize = 256;
@@ -33,7 +35,7 @@ const NoiseLevelTracker = () => {
 
           if (avgVolume > highestNoiseLevel) {
             setHighestNoiseLevel(avgVolume);
-            localStorage.setItem('highestNoiseLevel', avgVolume);
+            localStorage.setItem("highestNoiseLevel", avgVolume);
           }
 
           requestAnimationFrame(updateNoiseLevel);
@@ -41,7 +43,7 @@ const NoiseLevelTracker = () => {
 
         updateNoiseLevel();
       } catch (err) {
-        setError('Microphone access denied or unavailable: ' + err.message);
+        setError("Microphone access denied or unavailable: " + err.message);
       }
     };
 
@@ -62,7 +64,7 @@ const NoiseLevelTracker = () => {
 
   const resetTracking = () => {
     setHighestNoiseLevel(0);
-    localStorage.setItem('highestNoiseLevel', 0);
+    localStorage.setItem("highestNoiseLevel", 0);
   };
 
   const toggleTracking = () => {
@@ -79,27 +81,33 @@ const NoiseLevelTracker = () => {
       ) : (
         <>
           <p className="text-center text-lg font-medium text-gray-700 mb-4">
-            Current Noise Level: <span className="text-indigo-600">{Math.round(noiseLevel)}</span>
+            Current Noise Level:{" "}
+            <span className="text-indigo-600">{Math.round(noiseLevel)}</span>
           </p>
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
-            Highest Noise Level: <span className="text-red-600">{Math.round(highestNoiseLevel)}</span>
+            Highest Noise Level:{" "}
+            <span className="text-red-600">
+              {Math.round(highestNoiseLevel)}
+            </span>
           </p>
-          <button
+          <div className="flex flex-row gap-2">
+            <button
               onClick={toggleTracking}
               className={`mt-4 w-full py-2 px-4 text-white rounded-lg text-lg font-semibold transition-colors ${
                 isTracking
-                  ? 'bg-red-500 hover:bg-red-600'
-                  : 'bg-indigo-500 hover:bg-indigo-600'
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-indigo-500 hover:bg-indigo-600"
               }`}
             >
-              {isTracking ? 'Stop Tracking' : 'Start Tracking'}
+              {isTracking ? "Stop Tracking" : "Start Tracking"}
             </button>
-          <button
-            onClick={resetTracking}
-            className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
-          >
-            Reset Tracking
-          </button>
+            <button
+              onClick={resetTracking}
+              className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+            >
+              Reset Tracking
+            </button>
+          </div>
         </>
       )}
     </div>
