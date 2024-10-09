@@ -3,6 +3,7 @@ import MovementTracker from './components/MovementTracker';
 import NoiseLevelTracker from './components/NoiseLevelTracker';
 import StepTracker from './components/StepTracker';
 import TotalMovementTracker from './components/TotalMovementTracker';
+import AudioDetector from './components/AudioDetector';
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <StepTracker />
         <MovementTracker />
         <TotalMovementTracker />
+        <AudioDetector />
       </div>
     </div>
   );
