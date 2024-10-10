@@ -91,22 +91,22 @@ const StepTracker = () => {
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
             Step Count: <span className="text-indigo-600">{stepCount}</span>
           </p>
-          <div className="flex flex-row gap-2">
+          
           {!isTracking && (
             <button
               onClick={toggleTracking}
-              className="mt-4 w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-lg font-semibold"
+              className="mt-4 w-full py-2 px-4 bg-gray-500 hover:bg-gray-700 text-white rounded-lg text-lg font-semibold"
             >
               Allow Access to Sensors
             </button>
           )}
           <button
             onClick={resetTracking}
-            className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+            className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
           >
             Reset Tracking
           </button>
-          </div>
+          
         </>
       )}
     </div>

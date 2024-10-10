@@ -114,7 +114,7 @@ const MovementTracker = () => {
           </div>
           <button
             onClick={resetTracking}
-            className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+            className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
           >
             Reset Tracking
           </button>

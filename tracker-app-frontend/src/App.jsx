@@ -1,9 +1,9 @@
-import React from 'react';
-import MovementTracker from './components/MovementTracker';
-import NoiseLevelTracker from './components/NoiseLevelTracker';
-import StepTracker from './components/StepTracker';
-import TotalMovementTracker from './components/TotalMovementTracker';
-import AudioDetector from './components/AudioDetector';
+import React from "react";
+import MovementTracker from "./components/MovementTracker";
+import NoiseLevelTracker from "./components/NoiseLevelTracker";
+import StepTracker from "./components/StepTracker";
+import TotalMovementTracker from "./components/TotalMovementTracker";
+import AudioDetector from "./components/AudioDetector";
 
 const App = () => {
   return (
@@ -12,11 +12,11 @@ const App = () => {
         Tracker
       </h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
-        <NoiseLevelTracker />
         <StepTracker />
+        <NoiseLevelTracker />
         <MovementTracker />
-        <TotalMovementTracker />
         <AudioDetector />
+        <TotalMovementTracker />
       </div>
     </div>
   );
