@@ -6,16 +6,16 @@ const TotalMovementTracker = () => {
   const calculateTotalMovement = () => {
     const stepCount = parseInt(localStorage.getItem("stepCount")) || 0;
     const movementCount = parseInt(localStorage.getItem("movementCount")) || 0;
-    const highestNoiseLevel =
-      parseInt(localStorage.getItem("highestNoiseLevel")) || 0;
-    const total = stepCount + movementCount + highestNoiseLevel;
+    const highestNoiseLevel = parseInt(localStorage.getItem("highestNoiseLevel")) || 0;
+    const detectionCount = parseInt(localStorage.getItem("detectionCount")) || 0;
+    
+    const total = stepCount + movementCount + highestNoiseLevel + detectionCount;
     setTotalMovement(total);
   };
 
   useEffect(() => {
     calculateTotalMovement();
 
-    // Add event listeners for storage changes (optional)
     window.addEventListener("storage", calculateTotalMovement);
 
     return () => {
@@ -27,6 +27,7 @@ const TotalMovementTracker = () => {
     localStorage.setItem("stepCount", 0);
     localStorage.setItem("movementCount", 0);
     localStorage.setItem("highestNoiseLevel", 0);
+    localStorage.setItem("detectionCount", 0);
     setTotalMovement(0);
   };
 
@@ -38,20 +39,20 @@ const TotalMovementTracker = () => {
       <p className="text-center text-lg font-medium text-gray-700 mb-6">
         Total Movement: <span className="text-indigo-600">{totalMovement}</span>
       </p>
-      <div className="flex flex-row gap-2">
+      
         <button
           onClick={calculateTotalMovement}
-          className="mt-4 w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-lg font-semibold"
+          className="mt-4 w-full py-2 px-4 bg-gray-500 hover:bg-gray-700 text-white rounded-lg text-lg font-semibold"
         >
           Update Total Movement
         </button>
         <button
           onClick={resetTotalMovement}
-          className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+          className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
         >
           Reset Total Movement
         </button>
-      </div>
+     
     </div>
   );
 };

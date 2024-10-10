@@ -90,24 +90,24 @@ const NoiseLevelTracker = () => {
               {Math.round(highestNoiseLevel)}
             </span>
           </p>
-          <div className="flex flex-row gap-2">
+          
             <button
               onClick={toggleTracking}
               className={`mt-4 w-full py-2 px-4 text-white rounded-lg text-lg font-semibold transition-colors ${
                 isTracking
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-indigo-500 hover:bg-indigo-600"
+                  ? "bg-gray-800 hover:bg-gray-950"
+                  : "bg-gray-500 hover:bg-gray-700"
               }`}
             >
               {isTracking ? "Stop Tracking" : "Start Tracking"}
             </button>
             <button
               onClick={resetTracking}
-              className="mt-4 w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+              className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
             >
               Reset Tracking
             </button>
-          </div>
+          
         </>
       )}
     </div>

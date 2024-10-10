@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AudioDetector = () => {
     const [songInfo, setSongInfo] = useState(null);
     const [status, setStatus] = useState('');
     const [isDetecting, setIsDetecting] = useState(false);
+
+    // Load the detection count from localStorage when the component mounts
+    const [detectionCount, setDetectionCount] = useState(() => {
+        return parseInt(localStorage.getItem("detectionCount")) || 0;
+    });
 
     const handleAudioDetection = async () => {
         setStatus('Requesting microphone access...');
@@ -40,6 +45,11 @@ const AudioDetector = () => {
                     if (response.data.status.code === 0 && response.data.metadata.music?.length > 0) {
                         setSongInfo(response.data.metadata.music[0]);
                         setStatus('');
+
+                        // Increment and save detection count
+                        const newDetectionCount = detectionCount + 1;
+                        setDetectionCount(newDetectionCount);
+                        localStorage.setItem("detectionCount", newDetectionCount);
                     } else {
                         setStatus('No song detected');
                     }
@@ -94,7 +104,6 @@ const AudioDetector = () => {
                             Album: {songInfo.album.name || 'Unknown Album'}
                         </p>
                     )}
-                    {/* Note: ACRCloud doesn't provide cover images directly */}
                     <img 
                         src="/api/placeholder/320/320"
                         alt="Album Cover" 
@@ -102,11 +111,14 @@ const AudioDetector = () => {
                     />
                 </div>
             )}
-            <div className="flex flex-row gap-2">
+            <p className="text-center text-lg font-semibold text-indigo-600 mb-6">
+                Successful Detections: {detectionCount}
+            </p>
+            
                 <button
                     onClick={handleAudioDetection}
                     className={`w-full py-2 px-4 text-white rounded-lg text-lg font-semibold ${
-                        isDetecting ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'
+                        isDetecting ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-500 hover:bg-gray-700'
                     }`}
                     disabled={isDetecting}
                 >
@@ -114,11 +126,11 @@ const AudioDetector = () => {
                 </button>
                 <button
                     onClick={() => setSongInfo(null)}
-                    className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg text-lg font-semibold"
+                    className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
                 >
                     Reset
                 </button>
-            </div>
+            
         </div>
     );
 };
