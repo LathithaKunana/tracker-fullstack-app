@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FaPlay, FaPause, FaTrash } from 'react-icons/fa';
 
-const AudioDetector = () => {
+const AudioDetector = ({ startTracking }) => {
     const [songInfo, setSongInfo] = useState(null);
     const [status, setStatus] = useState('');
     const [isDetecting, setIsDetecting] = useState(false);
@@ -20,6 +20,14 @@ const AudioDetector = () => {
     });
 
     const lastActivitySnapshot = useRef(0);
+
+    useEffect(() => {
+        if (startTracking) {
+            handleAudioDetection()
+          // Start step tracking logic here
+          console.log("Step tracking started");
+        }
+      }, [startTracking]);
 
     const handleAudioDetection = async () => {
         setStatus('Requesting microphone access...');

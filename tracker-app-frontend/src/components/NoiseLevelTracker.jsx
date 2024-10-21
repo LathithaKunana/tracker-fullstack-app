@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const NoiseLevelTracker = () => {
+const NoiseLevelTracker = ({ startTracking}) => {
   const [noiseLevel, setNoiseLevel] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
   const [highestNoiseLevel, setHighestNoiseLevel] = useState(() => {
@@ -61,6 +61,14 @@ const NoiseLevelTracker = () => {
       stopTracking();
     };
   }, [isTracking, highestNoiseLevel]);
+
+  useEffect(() => {
+    if (startTracking) {
+      toggleTracking()
+      // Start step tracking logic here
+      console.log("Step tracking started");
+    }
+  }, [startTracking]);
 
   const resetTracking = () => {
     setHighestNoiseLevel(0);

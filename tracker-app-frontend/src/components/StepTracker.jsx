@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const StepTracker = () => {
+const StepTracker = ({startTracking}) => {
   const [stepCount, setStepCount] = useState(() => {
     return parseInt(localStorage.getItem('stepCount')) || 0;
   });
   const [error, setError] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
+
+
   let lastAcceleration = { x: 0, y: 0, z: 0 };
   let lastStepTime = 0;
   const stepThreshold = 2.0; // Higher sensitivity for step detection
@@ -78,6 +80,14 @@ const StepTracker = () => {
   const toggleTracking = () => {
     setIsTracking(!isTracking);
   };
+
+  useEffect(() => {
+    if (startTracking) {
+      toggleTracking()
+      // Start step tracking logic here
+      console.log("Step tracking started");
+    }
+  }, [startTracking]);
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
