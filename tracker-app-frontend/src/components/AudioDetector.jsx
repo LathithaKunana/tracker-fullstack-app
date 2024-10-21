@@ -6,7 +6,7 @@ const AudioDetector = ({ startTracking }) => {
     const [songInfo, setSongInfo] = useState(null);
     const [status, setStatus] = useState('');
     const [isDetecting, setIsDetecting] = useState(false);
-    const [timer, setTimer] = useState(120);
+    const [timer, setTimer] = useState(120); // Default to 120 seconds
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [tracklistVisible, setTracklistVisible] = useState(false);
     const [currentSongActivity, setCurrentSongActivity] = useState(0);
@@ -23,11 +23,10 @@ const AudioDetector = ({ startTracking }) => {
 
     useEffect(() => {
         if (startTracking) {
-            handleAudioDetection()
-          // Start step tracking logic here
-          console.log("Step tracking started");
+            handleAudioDetection();
+            console.log("Audio detection started");
         }
-      }, [startTracking]);
+    }, [startTracking]);
 
     const handleAudioDetection = async () => {
         setStatus('Requesting microphone access...');
@@ -48,47 +47,48 @@ const AudioDetector = ({ startTracking }) => {
                 const blob = new Blob(chunks, { type: 'audio/wav' });
                 const formData = new FormData();
                 formData.append('sample', blob, 'sample.wav');
-                
+
                 const arrayBuffer = await blob.arrayBuffer();
                 formData.append('sample_bytes', arrayBuffer.byteLength.toString());
 
                 try {
                     const response = await axios.post('https://tracker-fullstack-app.vercel.app/api/identify', formData, {
                         headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
+                            'Content-Type': 'multipart/form-data',
+                        },
                     });
 
                     if (response.data.status.code === 0 && response.data.metadata.music?.length > 0) {
                         const detectedSong = response.data.metadata.music[0];
-                        
+
                         // If there's a previous song, save its activity to the tracklist
                         if (songInfo) {
-                            const updatedTracklist = [...tracklist, {...songInfo, activityTotal: currentSongActivity}];
+                            const updatedTracklist = [...tracklist, { ...songInfo, activityTotal: currentSongActivity }];
                             setTracklist(updatedTracklist);
                             localStorage.setItem('tracklist', JSON.stringify(updatedTracklist));
                         }
-                        
+
                         setSongInfo(detectedSong);
                         setStatus('');
-                        
+
                         const newDetectionCount = detectionCount + 1;
                         setDetectionCount(newDetectionCount);
                         localStorage.setItem("detectionCount", newDetectionCount);
 
                         // Reset the current song activity for the new song
                         setCurrentSongActivity(0);
-                        setTimer(120);
+                        setTimer(120); // Reset timer to 120 seconds for successful detection
                         setIsTimerRunning(true);
 
                         // Take a snapshot of the current total activity
                         lastActivitySnapshot.current = getTotalActivityFromComponents();
-
                     } else {
                         setStatus('No song detected');
+                        resetTimer(30); // Set the timer to 30 seconds if no song is detected
                     }
                 } catch (error) {
                     setStatus('Error detecting song: ' + (error.response?.data?.status?.msg || error.message));
+                    resetTimer(30); // Set the timer to 30 seconds on error
                 } finally {
                     setIsDetecting(false);
                 }
@@ -99,12 +99,12 @@ const AudioDetector = ({ startTracking }) => {
                 recorder.stop();
                 source.disconnect();
                 audioContext.close();
-                stream.getTracks().forEach(track => track.stop());
+                stream.getTracks().forEach((track) => track.stop());
             }, 10000);
-
         } catch (error) {
             setStatus('Microphone access denied or detection failed.');
             setIsDetecting(false);
+            resetTimer(30); // Set the timer to 30 seconds if detection fails
         }
     };
 
@@ -121,20 +121,25 @@ const AudioDetector = ({ startTracking }) => {
         if (isTimerRunning && timer > 0) {
             const interval = setInterval(() => {
                 setTimer((prev) => prev - 1);
-                
+
                 const currentTotalActivity = getTotalActivityFromComponents();
                 const activityDelta = currentTotalActivity - lastActivitySnapshot.current;
                 setCurrentSongActivity((prev) => prev + activityDelta);
                 lastActivitySnapshot.current = currentTotalActivity;
 
                 if (timer - 1 === 0) {
-                    handleAudioDetection();
+                    handleAudioDetection(); // Restart detection when the timer hits zero
                 }
             }, 1000);
 
             return () => clearInterval(interval);
         }
     }, [isTimerRunning, timer]);
+
+    const resetTimer = (duration) => {
+        setTimer(duration); // Reset the timer to the given duration (30 or 120 seconds)
+        setIsTimerRunning(true); // Start the timer again
+    };
 
     const toggleTimer = () => {
         setIsTimerRunning((prev) => !prev);
@@ -148,9 +153,7 @@ const AudioDetector = ({ startTracking }) => {
 
     return (
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
-                Audio Detector
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">Audio Detector</h2>
             {status && (
                 <p className="text-center text-lg font-medium text-gray-700 mb-6 animate-pulse">
                     {status}
@@ -166,26 +169,25 @@ const AudioDetector = ({ startTracking }) => {
             </div>
             {songInfo && (
                 <div className="bg-gray-100 p-4 rounded-lg shadow-inner text-gray-800 mb-6">
-                    <h3 className="text-lg font-semibold text-center">
-                        {songInfo.title || 'Unknown Title'}
-                    </h3>
+                    <h3 className="text-lg font-semibold text-center">{songInfo.title || 'Unknown Title'}</h3>
                     <p className="text-center text-gray-600">
-                        {songInfo.artists?.map(artist => artist.name).join(', ') || 'Unknown Artist'}
+                        {songInfo.artists?.map((artist) => artist.name).join(', ') || 'Unknown Artist'}
                     </p>
-                    <p className="text-center text-gray-600">
-                        Album: {songInfo.album?.name || 'Unknown Album'}
-                    </p>
-                    <img 
+                    <p className="text-center text-gray-600">Album: {songInfo.album?.name || 'Unknown Album'}</p>
+                    <img
                         src="/api/placeholder/320/320"
-                        alt="Album Cover" 
-                        className="w-32 h-32 mx-auto rounded-md my-2 bg-gray-200" 
+                        alt="Album Cover"
+                        className="w-32 h-32 mx-auto rounded-md my-2 bg-gray-200"
                     />
                     <p className="text-center mt-4 text-lg font-semibold text-indigo-600">
                         Current Song Activity: {currentSongActivity}
                     </p>
                 </div>
             )}
-            <p className="text-center text-lg font-semibold text-indigo-600 mb-6 cursor-pointer" onClick={() => setTracklistVisible(!tracklistVisible)}>
+            <p
+                className="text-center text-lg font-semibold text-indigo-600 mb-6 cursor-pointer"
+                onClick={() => setTracklistVisible(!tracklistVisible)}
+            >
                 Successful Detections: {detectionCount}
             </p>
             {tracklistVisible && (
@@ -195,11 +197,11 @@ const AudioDetector = ({ startTracking }) => {
                             <li key={index} className="border-b border-gray-300 py-2 flex justify-between items-center">
                                 <div>
                                     <p className="font-semibold">{song.title || 'Unknown Title'}</p>
-                                    <p className="text-gray-600">{song.artists?.map(artist => artist.name).join(', ') || 'Unknown Artist'}</p>
+                                    <p className="text-gray-600">{song.artists?.map((artist) => artist.name).join(', ') || 'Unknown Artist'}</p>
                                     <p className="text-indigo-600">Total Activity: {song.activityTotal}</p>
                                 </div>
-                                <FaTrash 
-                                    className="text-red-500 cursor-pointer" 
+                                <FaTrash
+                                    className="text-red-500 cursor-pointer"
                                     onClick={() => deleteSong(index)}
                                 />
                             </li>
@@ -217,7 +219,7 @@ const AudioDetector = ({ startTracking }) => {
             <button
                 onClick={() => {
                     if (songInfo) {
-                        const updatedTracklist = [...tracklist, {...songInfo, activityTotal: currentSongActivity}];
+                        const updatedTracklist = [...tracklist, { ...songInfo, activityTotal: currentSongActivity }];
                         setTracklist(updatedTracklist);
                         localStorage.setItem('tracklist', JSON.stringify(updatedTracklist));
                     }
