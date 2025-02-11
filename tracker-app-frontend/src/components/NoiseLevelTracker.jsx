@@ -90,11 +90,11 @@ const NoiseLevelTracker = ({ startTracking}) => {
         <>
           <p className="text-center text-lg font-medium text-gray-700 mb-4">
             Current Noise Level:{" "}
-            <span className="text-indigo-600">{Math.round(noiseLevel)}</span>
+            <span className="text-fuchsia-700">{Math.round(noiseLevel)}</span>
           </p>
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
             Highest Noise Level:{" "}
-            <span className="text-red-600">
+            <span className="text-fuchsia-900">
               {Math.round(highestNoiseLevel)}
             </span>
           </p>
@@ -111,7 +111,7 @@ const NoiseLevelTracker = ({ startTracking}) => {
             </button>
             <button
               onClick={resetTracking}
-              className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
+              className="mt-4 w-full py-2 px-4 bg-fuchsia-900 hover:bg-fuchsia-700 text-white rounded-lg text-lg font-semibold"
             >
               Reset Tracking
             </button>

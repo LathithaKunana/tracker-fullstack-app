@@ -179,13 +179,13 @@ const AudioDetector = ({ startTracking }) => {
                         alt="Album Cover"
                         className="w-32 h-32 mx-auto rounded-md my-2 bg-gray-200"
                     />
-                    <p className="text-center mt-4 text-lg font-semibold text-indigo-600">
+                    <p className="text-center mt-4 text-lg font-semibold bg-fuchsia-700">
                         Current Song Activity: {currentSongActivity}
                     </p>
                 </div>
             )}
             <p
-                className="text-center text-lg font-semibold text-indigo-600 mb-6 cursor-pointer"
+                className="text-center text-lg font-semibold text-fuchsia-700 mb-6 cursor-pointer"
                 onClick={() => setTracklistVisible(!tracklistVisible)}
             >
                 Successful Detections: {detectionCount}
@@ -198,7 +198,7 @@ const AudioDetector = ({ startTracking }) => {
                                 <div>
                                     <p className="font-semibold">{song.title || 'Unknown Title'}</p>
                                     <p className="text-gray-600">{song.artists?.map((artist) => artist.name).join(', ') || 'Unknown Artist'}</p>
-                                    <p className="text-indigo-600">Total Activity: {song.activityTotal}</p>
+                                    <p className="text-fuchsia-700">Total Activity: {song.activityTotal}</p>
                                 </div>
                                 <FaTrash
                                     className="text-red-500 cursor-pointer"
@@ -228,7 +228,7 @@ const AudioDetector = ({ startTracking }) => {
                     setTimer(120);
                     lastActivitySnapshot.current = getTotalActivityFromComponents();
                 }}
-                className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
+                className="mt-4 w-full py-2 px-4 bg-fuchsia-900 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
             >
                 Reset
             </button>

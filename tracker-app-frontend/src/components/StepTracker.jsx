@@ -99,7 +99,7 @@ const StepTracker = ({startTracking}) => {
       ) : (
         <>
           <p className="text-center text-lg font-medium text-gray-700 mb-6">
-            Step Count: <span className="text-indigo-600">{stepCount}</span>
+            Step Count: <span className="text-fuchsia-700">{stepCount}</span>
           </p>
           
           {!isTracking && (
@@ -112,7 +112,7 @@ const StepTracker = ({startTracking}) => {
           )}
           <button
             onClick={resetTracking}
-            className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
+            className="mt-4 w-full py-2 px-4 bg-fuchsia-900 hover:bg-fuchsia-700 text-white rounded-lg text-lg font-semibold"
           >
             Reset Tracking
           </button>

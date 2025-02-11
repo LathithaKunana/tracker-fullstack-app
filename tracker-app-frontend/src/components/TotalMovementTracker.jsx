@@ -37,7 +37,7 @@ const TotalMovementTracker = () => {
         Total Activity Tracker
       </h2>
       <p className="text-center text-lg font-medium text-gray-700 mb-6">
-        Total Movement: <span className="text-indigo-600">{totalMovement}</span>
+        Total Movement: <span className="text-fuchsia-700">{totalMovement}</span>
       </p>
       
         <button
@@ -48,7 +48,7 @@ const TotalMovementTracker = () => {
         </button>
         <button
           onClick={resetTotalMovement}
-          className="mt-4 w-full py-2 px-4 bg-neutral-800 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
+          className="mt-4 w-full py-2 px-4 bg-fuchsia-900 hover:bg-neutral-950 text-white rounded-lg text-lg font-semibold"
         >
           Reset Total Movement
         </button>
